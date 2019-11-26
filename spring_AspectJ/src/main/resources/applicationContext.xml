@@ -11,30 +11,18 @@
     <!--配置aop-->
     <aop:config>
         <!--切入点，拦截哪些bean的方法-->
-     <!--切面：要对哪些方法进行怎么样的增强
-         aop：aspect aspectj 的方式
-         ref：配置通知
-         -->
-        <aop:pointcut id="myAspect"
-                      expression="execution(public void cn.zs.springaop.service.HelloService.sayHello())"/>
-        <aop:pointcut id="pointcut" expression="execution(* cn.zs.springaop.service.HelloService.printString())"/>
-        <!--<aop:pointcut id="login" expression="execution(* cn.zs.springaop.service.LoginService.login())"/>-->
-
-        <aop:aspect ref="myAspectj">
-            <!--通知关联切入点:就是将通知和切入点进行绑定
-            method：advice类中的方法
-            pointcut-ref：注入切入点。
+        <!--切面：要对哪些方法进行怎么样的增强
+            aop：aspect aspectj 的方式
+            ref：配置通知
             -->
-
-            <aop:after method="after" pointcut-ref="pointcut"/>
-            <!--<aop:before method="before" pointcut-ref="login"/>-->
-            <aop:before method="before" pointcut-ref="myAspect"/>
+        <aop:aspect ref="myAspect">
+            <!--通知关联切入点:就是将通知和切入点进行绑定
+           method：advice类中的方法
+           pointcut-ref：注入切入点。
+           -->
+            <aop:pointcut id="123" expression="execution(* cn.zs.springaop.service.LoginService.login())"/>
+            <aop:before method="before" pointcut-ref="123"/>
         </aop:aspect>
-<aop:aspect ref="myAspect">
-<aop:pointcut id="123" expression="execution(* cn.zs.springaop.service.LoginService.login())"/>
-    <aop:before method="qianzhi" pointcut-ref="123"/>
-</aop:aspect>
-
 
 
     </aop:config>
