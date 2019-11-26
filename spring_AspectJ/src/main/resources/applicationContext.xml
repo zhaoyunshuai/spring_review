@@ -21,7 +21,18 @@
            pointcut-ref：注入切入点。
            -->
             <aop:pointcut id="123" expression="execution(* cn.zs.springaop.service.LoginService.login())"/>
+            <!--前置通知-->
             <aop:before method="before" pointcut-ref="123"/>
+            <!--如果最终通知中需要进行参数的返回，需要在此配置return属性-->
+            <aop:after-returning method="afterReturning" pointcut="execution(* cn.zs.springaop.service.LoginService.afterReturningTest(..))" returning="returnValue"/>
+            <!--环绕通知-->
+            <aop:around method="around" pointcut="execution(* cn.zs.springaop.service.LoginService.aroundTest(..))"/>
+            <!--需要配置目标方法抛出的异常 throwing属性-->
+            <aop:after-throwing method="afterThrowing" pointcut="execution(public void cn.zs.springaop.service.LoginService.afterThrowingTest())" throwing="e"/>
+            <!--最终通知-->
+            <aop:after method="after" pointcut="execution(* cn.zs.springaop.service.LoginService.afterTest())"/>
+            <!--此处是用来验证，同一个方法afterThrowingTest 如果被最终通知进行了增强，无论是否发生异常，都是会被执行的-->
+            <aop:after method="after" pointcut="execution(* cn.zs.springaop.service.LoginService.afterThrowingTest())"/>
         </aop:aspect>
 
 
