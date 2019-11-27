@@ -1,11 +1,13 @@
 注解方式配置aspectJ
     1.编写通知类，并加上@Aspect注解吗，同时需要将通知类交给spring进行管理。
     2.在切面类的通知方法上添加注解。
-        @Before：表明方法为前置通知
+        @Before：表明方法为前置通知 例:@Before("切入点表达式1||切入点表达式2")
         @AfterReturning：表明方法为后置通知，
         @Around：表明方法为环绕通知
         @AfterThrowing：表明方法为异常通知（抛出通知）
         @After：表明方法为最终通知
         @DeclareParents：引介通知（很少用，不必掌握，知道就行）
+        需要注意的是，当在方法上加上各类通知的注解以后，需要在注解中加上切入点表达式，
+        如果说切入点有多个中间用||进行隔开
     3.在spring容器中开启AspectJ 注解自动代理机制
         <aop:aspect-autoproxy>
