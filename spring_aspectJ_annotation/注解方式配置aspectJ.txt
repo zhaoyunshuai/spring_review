@@ -1,0 +1,11 @@
+注解方式配置aspectJ
+    1.编写通知类，并加上@Aspect注解吗，同时需要将通知类交给spring进行管理。
+    2.在切面类的通知方法上添加注解。
+        @Before：表明方法为前置通知
+        @AfterReturning：表明方法为后置通知，
+        @Around：表明方法为环绕通知
+        @AfterThrowing：表明方法为异常通知（抛出通知）
+        @After：表明方法为最终通知
+        @DeclareParents：引介通知（很少用，不必掌握，知道就行）
+    3.在spring容器中开启AspectJ 注解自动代理机制
+        <aop:aspect-autoproxy>
