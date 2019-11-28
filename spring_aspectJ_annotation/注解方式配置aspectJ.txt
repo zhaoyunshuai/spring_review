@@ -2,10 +2,10 @@
     1.编写通知类，并加上@Aspect注解吗，同时需要将通知类交给spring进行管理。
     2.在切面类的通知方法上添加注解。
         @Before：表明方法为前置通知 例:@Before("切入点表达式1||切入点表达式2")
-        @AfterReturning：表明方法为后置通知，
-        @Around：表明方法为环绕通知
-        @AfterThrowing：表明方法为异常通知（抛出通知）
-        @After：表明方法为最终通知
+        @AfterReturning：表明方法为后置通知，例：@AfterReturning(value="切入点表达式" return="返回值")
+        @Around：表明方法为环绕通知，例：@Around("切入点表达式")
+        @AfterThrowing：表明方法为异常通知（抛出通知）例：@AfterThrowing(value="切入点表达式" throwing="e")
+        @After：表明方法为最终通知 例：@After("切入点表达式")
         @DeclareParents：引介通知（很少用，不必掌握，知道就行）
         需要注意的是，当在方法上加上各类通知的注解以后，需要在注解中加上切入点表达式，
         如果说切入点有多个中间用||进行隔开
