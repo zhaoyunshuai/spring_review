@@ -11,3 +11,6 @@
         如果说切入点有多个中间用||进行隔开
     3.在spring容器中开启AspectJ 注解自动代理机制
         <aop:aspect-autoproxy>
+        可以设置属性：proxy-target-class=""
+            设置是否使用CGLIB代理，当设置true的时候，使用的是CGLIB，当false的时候使用的JDK
+            默认为false
