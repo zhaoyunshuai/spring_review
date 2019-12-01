@@ -1,0 +1,82 @@
+spring事务
+    接口：PlatformTransactionManager:事务管理器。主要用于平台事务的管理
+        TransactionDefinition：事务的定义信息（隔离，传播，超时，只读）通过配置来指定如何进行事务的管理
+        TransactionStatus：事务具体的运行状态，事务管理过程中，每个时间点事务的状态信息
+
+        PlatformTransactionManager：事务平台管理器
+            commit：用事务的提交
+            rollback：用于事务的回滚
+            getTransaction：获取事务状态
+            接口实现：主要是针对不同的持久化机制来使用不同的事务管理平台
+                SpringJDBC、Mybatis：DatasourceTransactionManager
+                Hibernate：HibernateTransactionManager
+                JPA：JpaTransactionManager
+                等等。
+
+                DatasourceTransactionManager：主要是使用Connection（连接）进行事务控制
+                    connection.setAutoCommit（false）开启事务，设置不自动进行提交
+                    connection.commit():提交事务
+                    connection.rollback():事务回滚
+
+        TransactionDefinition：事务定义信息。
+            方法：
+                getIsolationLevel：获取隔离级别
+                getPropagationBehavior：获取传播行为
+                getTimeOut：获取超时时间（事务的有效时间）
+                isReadOnly：是否只读。
+            事务的隔离级别isolationLevel
+                read_uncommitted:读未提交。允许读取还未提交的改变了的数据。无法避免脏、幻、不可重复读
+                read_committed:读已提交。可以防止脏读，不能防止重复读和幻读
+                repeatable_read:重复读，可以防止脏、重复读，但不能防止幻读
+                serializable:序列化。可以防止脏读幻读不可重复读。
+                事务;逻辑上的一组操作，组成这组操作的各个单元，要么全部成功，要么全部失败。
+                脏读：一个事务读取了另外一个事务改写但还未提交的数据，如果这些数据被回滚，那么读取的数据就是无效的。
+                重复读：在同一事务中多次读取同一数据返回的结果不同。换句话说，就是后续读取可以读到另一事务已经提交的数据
+                    相反，可重复读是在同一事务中多次读取同一数据返回的结果相同，也就是说后续读取不能读到另一事务提交的数据。
+                幻读：一个事务读取了几条记录后，另外一事务又插入了新的数据，幻读就产生了。在后来的查询中就会发现一些原来没有的记录。
+            事务的传播行为：PropagationBehavior
+                主要是用于解决被两个事务管理的方法之间互相调用的问题。
+                事务传播行为分类7中：
+                    一些定义，外层方法称为调用方法，内层方法被称为被调用方法。
+                    propagation_required:支持当前事务，如果不存在，则创建一个新的事务。
+                        如果外层方法存在事务，则加入外层方法事务，如果外层方法不存在事务，则创建一个新的事务。
+                    propagation_supports:支持当前事务，如果不存在，就以无事务运行
+                        如果外层方法存在事务，则加入到外层方法事务中，如果外层方法不存在事务，就以无事务的方式运行
+                    propagation_mandatory：支持当前事务，如果不存在，抛出异常。（mandatory：强制性的。）
+                        如果外层存在事务，就加入到外层事务中，如果外层方法不存在事务，就抛出异常
+                    propagation_requires_new:不支持当前事务，如果事务存在，挂起，另外起一个新的事务
+                        外层方法如果存在事务，就挂起外层方法的事务，内层方法会创建新的事务，待内层事务完毕后，才会运行外层事务。
+                        不管外层方法是否有事务，都会创建一个新的事务运行。
+                    propagation_not_supported:不支持当前事务，如果当前事务存在，挂起。以非事务运行。
+                        外层方法存在事务，挂起，以非事务方式运行。
+                        不管外层方法是否存在事务，都以非事务的方式运行。
+                    propagation_never:以非事务运行，如果事务存在则抛出异常。
+                        外层方法如果有事务，那么就抛出异常，如果没有事务，就以非事务的方式运行。
+                    propagation_nested:如果当前事务存在，则嵌套事务运行。只对DataSourceTransactionManager生效。
+                        如果当前不存在事务，那么就以propagation_required传播行为进行处理。
+                        如果外层方法存在事务，进行事务的嵌套（意思就是外层一个事务，内层一个事务）
+                        如果外层方法不存在事务，那么内层方法自己创建一个事务运行。
+                        嵌套：当内层事务回滚时，外层方法不会回滚；外层方法回滚时，内层方法也会进行回滚。
+                        同一事务：内层方法和外层方法处于同一事务，要么同时提交，要么同时回滚
+                        不同事务：内层方法事务运行时，外层方法会挂起。内层方法的提交和回滚与外层方法的提交和回滚是相互独立的。
+
+        TransactionStatus：事务的状态:事务运行时，每个时间点，事务的状态信息。
+            方法：
+                flush()：给Hibernate使用，底层发出sql
+                hasSavePoint()：判断是否有保留点
+                isCompleted()：判断事务是否结束
+                isNewTransaction()：判断事务是否为一个新的事务
+                isRollbackOnly()：判断事务是否只能回滚
+                setRollbackOnly()：设置事务是否回滚。
+            注意：事务结束，必须通过commit进行事务提交，rollback作为标记为回滚
+                数据操作中个，如果只是回滚，后面不做操作，数据库关闭连接的时候，会自动的而进行commit
+
+        三个事务超级接口对象间的关系
+            1.如果要进行事务管理，首先要配置TransactionManager进行事务管理
+            2.通过TransactionDefinition对事务进行各种定义，然后交给事务管理器进行管理。
+            3.TransactionStatus主要是用于获取事务的状态信息。
+
+
+
+
+
