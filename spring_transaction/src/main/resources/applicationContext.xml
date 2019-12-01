@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--开启自动注解自动扫描机制-->
+    <context:component-scan base-package="cn.zs.springTransaction"/>
+    <!--引入外部文件-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driverClass}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+<!--配置事务三步走-->
+    <!--1、配置事务管理器-->
+    <bean id="transaction" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--2、配置事务通知（其实就是配置事务的一些策略，以及事务应用在什么方法上。）-->
+    <!--一定要配置id和transaction-manager
+    id：事务通知的标识
+    transaction-manager：配置事务管理器，就是告知让什么事务管理器进行管理。
+    -->
+    <tx:advice id="interceptor" transaction-manager="transaction">
+        <tx:attributes>
+            <tx:method name="transfer" isolation="DEFAULT" propagation="REQUIRED" timeout="-1"  />
+        </tx:attributes>
+    </tx:advice>
+    <!--3、配置切面是切入点和事务进行连接-->
+    <aop:config>
+        <aop:pointcut id="accountService" expression="execution(public void cn.zs.springTransaction.service.impl.AccountServiceImpl.transfer(String ,String ,Double))"/>
+        <!--advice-ref：通知引用，引用那个通知，其实就是引用哪个事务
+        pointcut-ref：切入点引用，就是告知应用在哪一个切入点上。
+        -->
+        <aop:advisor advice-ref="interceptor" pointcut-ref="accountService"/>
+    </aop:config>
+</beans>
