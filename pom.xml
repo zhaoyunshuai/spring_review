@@ -11,6 +11,10 @@
     <modules>
         <module>spring_AOP</module>
         <module>spring_AspectJ</module>
+        <module>spring_aspectJ_annotation</module>
+        <module>spring_jdbcTemplate</module>
+        <module>spring_transaction</module>
+        <module>spring_transaction_anotation</module>
     </modules>
 
 
